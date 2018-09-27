@@ -7,7 +7,7 @@
                 <v-flex xs12>
                     <v-carousel>
                         <v-carousel-item
-                                v-for="ad in promoAds"
+                                v-for="ad of promoAds"
                                 :key="ad.id"
                                 :src="ad.imageSrc"
                         >
