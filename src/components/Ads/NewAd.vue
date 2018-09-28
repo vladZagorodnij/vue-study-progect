@@ -49,9 +49,10 @@
                     <v-flex xs12>
                         <v-spacer></v-spacer>
                         <v-btn
+                                :loading="loading"
                                 class="success"
                                 @click="createAd"
-                                :disabled="!valid"
+                                :disabled="!valid || loading"
                         >Create ad</v-btn>
                     </v-flex>
                 </v-layout>
@@ -70,6 +71,11 @@
         valid: false
       }
     },
+    computed: {
+      loading () {
+        return this.$store.getters.loading
+      }
+    },
     methods: {
       createAd () {
         if (this.$refs.form.validate()) {
@@ -80,6 +86,10 @@
             imageSrc: 'http://geoped.in.ua/wp-content/uploads/2016/05/%D0%BB%D0%B5%D0%B2-%D0%B2%D0%B8%D0%BC%D0%B5%D1%80%D0%BB%D1%96-%D1%82%D0%B2%D0%B0%D1%80%D0%B8%D0%BD%D0%B8-%D1%83%D0%BA%D1%80%D0%B0%D1%97%D0%BD%D0%B8.jpg'
           }
           this.$store.dispatch('createAd', ad)
+            .then(() => {
+              this.$router.push('/list')
+            })
+            .catch(() => {})
         }
       }
     }
