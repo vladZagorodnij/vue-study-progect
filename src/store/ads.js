@@ -1,45 +1,26 @@
 import * as fb from 'firebase'
 
 class Ad {
-  constructor (title, description, ownerId, imageSrc = '', promo=false, id = null) {
-    this.title =title
-    this.description =description
-    // this.ownerId =ownerId
-    this.imageSrc =imageSrc
-    this.promo =promo
-    this.id =id
+  constructor (title, description, ownerId, imageSrc = '', promo = false, id = null) {
+    this.title = title
+    this.description = description
+    this.ownerId = ownerId
+    this.imageSrc = imageSrc
+    this.promo = promo
+    this.id = id
   }
 }
 
 export default {
   state: {
-    ads: [
-      {
-        title: 'first',
-        description: 'first image',
-        promo: false,
-        imageSrc: 'http://opogode.ua/images/images/524328a760a5e0e716003394.jpg',
-        id: '123'
-      },
-      {
-        title: 'second',
-        description: 'second image',
-        promo: true,
-        imageSrc: 'https://people.in.ua/wp-content/uploads/2017/02/sobaka-1-649x450.jpg',
-        id: '1234'
-      },
-      {
-        title: 'third',
-        description: 'third image',
-        promo: true,
-        imageSrc: 'https://img.depo.ua/745xX/Dec2015/79593.jpg',
-        id: '12345'
-      }
-    ]
+    ads: []
   },
   mutations: {
     createAd (state, payload) {
       state.ads.push(payload)
+    },
+    loadAds (state, payload) {
+      state.ads = payload
     }
   },
   actions: {
@@ -64,7 +45,28 @@ export default {
           id: ad.key
         })
       } catch (error) {
-        commit('setError',error.message)
+        commit('setError', error.message)
+        commit('setLoading', false)
+        throw error
+      }
+    },
+    async fetchAds ({commit}) {
+      commit('clearError')
+      commit('setLoading', true)
+      const resultAds = []
+      try {
+        const fbVal = await fb.database().ref('ads').once('value')
+        const ads = fbVal.val()
+        Object.keys(ads).forEach(key => {
+          const ad = ads[key]
+          resultAds.push(
+              new Ad(ad.title, ad.description, ad.ownerId, ad.imageSrc, ad.promo, key)
+          )
+        })
+        commit('loadAds', resultAds)
+        commit('setLoading', false)
+      } catch (error) {
+        commit('setError', error.message)
         commit('setLoading', false)
         throw error
       }
