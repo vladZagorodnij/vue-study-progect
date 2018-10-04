@@ -1,6 +1,6 @@
 <template>
 
-    <div v-if="loading">
+    <div v-if="!loading">
 
         <v-container fluid>
             <v-layout row>
